@@ -24,8 +24,21 @@ class DetailTiketScreen extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CachedNetworkImage(imageUrl: tiket.gambarUrl, fit: BoxFit.cover),
-                  Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withOpacity(0.7)]))),
+                  // ✅ GUNAKAN Image.network
+                  Image.network(
+                    tiket.gambarUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade400),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -39,25 +52,41 @@ class DetailTiketScreen extends StatelessWidget {
                   Text('Detail Tiket', style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 16),
                   
-                  // Harga
                   if (bisaDiskon) ...[
-                    Text('Rp ${tiket.harga.toStringAsFixed(0)}', style: TextStyle(fontSize: 18, color: Colors.grey.shade500, decoration: TextDecoration.lineThrough)),
-                    Text('Rp ${hargaAkhir.toStringAsFixed(0)}', style: const TextStyle(fontSize: 28, color: Colors.red, fontWeight: FontWeight.bold)),
+                    Text(
+                      'Rp ${tiket.harga.toStringAsFixed(0)}',
+                      style: TextStyle(fontSize: 18, color: Colors.grey.shade500, decoration: TextDecoration.lineThrough),
+                    ),
+                    Text(
+                      'Rp ${hargaAkhir.toStringAsFixed(0)}',
+                      style: const TextStyle(fontSize: 28, color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 8),
-                    Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(8)), child: const Text('Diskon 10% untuk pembelian hari ini!', style: TextStyle(color: Colors.red))),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        'Diskon 10% untuk pembelian hari ini!',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
                   ] else
-                    Text('Rp ${tiket.harga.toStringAsFixed(0)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                    Text(
+                      'Rp ${tiket.harga.toStringAsFixed(0)}',
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
                   
                   const SizedBox(height: 24),
                   
-                  // Deskripsi
                   const Text('Deskripsi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(tiket.deskripsi(), style: const TextStyle(height: 1.6)),
                   
                   const SizedBox(height: 24),
                   
-                  // Info
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -73,7 +102,6 @@ class DetailTiketScreen extends StatelessWidget {
                   
                   const SizedBox(height: 32),
                   
-                  // Button
                   SizedBox(
                     width: double.infinity,
                     height: 56,
@@ -86,7 +114,10 @@ class DetailTiketScreen extends StatelessWidget {
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: Text(tiket.tersedia ? 'Pesan Sekarang' : 'Sold Out', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        tiket.tersedia ? 'Pesan Sekarang' : 'Sold Out',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
