@@ -25,7 +25,6 @@ class TiketProvider extends ChangeNotifier {
     loadPemesananSaya();
   }
   
-  // Getters
   List<Tiket> get daftarTiket => _daftarTiket;
   List<PemesananTiket> get pemesananSaya => _pemesananSaya;
   bool get isLoading => _isLoading;
@@ -33,16 +32,13 @@ class TiketProvider extends ChangeNotifier {
   int get promoWaktuSisa => _promoWaktuSisa;
   bool get adaError => _error != null;
   
-  // =============================================
-  // Load daftar tiket dengan error handling
-  // =============================================
-  Future<void> loadDaftarTiket() async {
+  Future<void> loadDaftarTiket({bool forceRefresh = false}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
     
     try {
-      _daftarTiket = await _service.ambilDaftarTiket();
+      _daftarTiket = await _service.ambilDaftarTiket(forceRefresh: forceRefresh);
     } on NetworkException catch (e) {
       _error = e.toString();
     } on Exception catch (e) {
@@ -53,15 +49,11 @@ class TiketProvider extends ChangeNotifier {
     }
   }
   
-  // =============================================
-  // Proses pemesanan dengan try/catch/finally
-  // =============================================
   Future<PemesananTiket?> prosesPemesanan(Tiket tiket, {bool gunakanDiskon = false}) async {
     _isLoading = true;
     notifyListeners();
     
     try {
-      // TRY: Eksekusi pemesanan
       final hasil = await _service.pesanTiket(tiket);
       
       double hargaBayar = gunakanDiskon && tiket is BisaDiskon 
@@ -88,7 +80,6 @@ class TiketProvider extends ChangeNotifier {
       return pemesanan;
       
     } on TiketHabisException catch (e) {
-      // CATCH: Custom exception (sold out)
       Get.snackbar(
         '❌ Tiket Habis',
         e.toString(),
@@ -99,7 +90,6 @@ class TiketProvider extends ChangeNotifier {
       rethrow;
       
     } catch (e) {
-      // CATCH: General exception
       Get.snackbar(
         '⚠️ Error',
         'Terjadi kesalahan: $e',
@@ -110,19 +100,16 @@ class TiketProvider extends ChangeNotifier {
       return null;
       
     } finally {
-      // FINALLY: Selalu dijalankan
       _isLoading = false;
       notifyListeners();
     }
   }
   
-  // Load pemesanan saya
   Future<void> loadPemesananSaya() async {
     _pemesananSaya = await _storage.getPemesanan();
     notifyListeners();
   }
   
-  // Countdown promo
   void _startPromoCountdown() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_promoWaktuSisa > 0) {
@@ -137,5 +124,10 @@ class TiketProvider extends ChangeNotifier {
   void resetPromo() {
     _promoWaktuSisa = 30;
     notifyListeners();
+  }
+  
+  Future<void> refreshData() async {
+    _service.clearCache();
+    await loadDaftarTiket(forceRefresh: true);
   }
 }
