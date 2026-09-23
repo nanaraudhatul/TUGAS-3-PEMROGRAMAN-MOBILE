@@ -18,7 +18,6 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
   
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<TiketProvider>();
     final bisaDiskon = widget.tiket is BisaDiskon;
     final harga = _gunakanDiskon && bisaDiskon 
         ? (widget.tiket as BisaDiskon).hargaSetelahDiskon 
@@ -32,7 +31,6 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                // Icon/Animation
                 if (provider.isLoading)
                   const CircularProgressIndicator()
                 else
@@ -80,10 +78,8 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
   
   Future<void> _konfirmasiPemesanan(TiketProvider provider) async {
     try {
-      // TRY: Eksekusi pemesanan
       await provider.prosesPemesanan(widget.tiket, gunakanDiskon: _gunakanDiskon);
       
-      // Success dialog
       if (mounted) {
         showDialog(
           context: context,
@@ -96,7 +92,10 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(color: Colors.blue.shade100, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade100,
+                    shape: BoxShape.circle,
+                  ),
                   child: Icon(Icons.check_circle, size: 50, color: Colors.blue.shade700),
                 ),
                 const SizedBox(height: 20),
@@ -127,7 +126,6 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
         );
       }
     } on TiketHabisException catch (e) {
-      // CATCH: Custom exception (sold out)
       if (mounted) {
         showDialog(
           context: context,
@@ -140,7 +138,10 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(color: Colors.red.shade100, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    shape: BoxShape.circle,
+                  ),
                   child: const Icon(Icons.error_outline, size: 50, color: Colors.red),
                 ),
                 const SizedBox(height: 20),
@@ -173,7 +174,6 @@ class _PesanTiketScreenState extends State<PesanTiketScreen> {
         );
       }
     } catch (e) {
-      // CATCH: General exception
       if (mounted) {
         showDialog(
           context: context,
